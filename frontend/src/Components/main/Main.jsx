@@ -1,8 +1,9 @@
 import { AddShoppingCartOutlined, CloseOutlined } from "@mui/icons-material"
-import { Box, Button, Card, CardActions, CardContent, CardMedia, Container, Dialog, IconButton, Rating, Stack, ToggleButton, ToggleButtonGroup, Typography, useTheme } from "@mui/material"
+import { Box, Button, Card, CardActions, CardContent, CardMedia, CircularProgress, Container, Dialog, IconButton, Rating, Stack, ToggleButton, ToggleButtonGroup, Typography, useTheme } from "@mui/material"
 import { useState } from "react"
 import ProductDetails from "./ProductDetails"
 import { useGetProductByNameQuery } from "../../redux/product"
+import { AnimatePresence, motion } from "framer-motion"
 
 
 const Main = () => {
@@ -14,11 +15,15 @@ const Main = () => {
 
     const [category, setCategory] = useState(allProductsAPI)
     const [open, setOpen] = useState(false)
+    const [clickedProduct, setClickedProduct] = useState({})
     const theme = useTheme()
 
     const handleAlignment = (event, newValue) => {
 
-        setCategory(newValue)
+        if (newValue !== null) {
+
+            setCategory(newValue)
+        }
     }
 
     const handleClickOpen = () => {
@@ -30,7 +35,6 @@ const Main = () => {
 
         setOpen(false)
     }
-
     
 
     const {data, error, isLoading} = useGetProductByNameQuery(category)
@@ -40,7 +44,10 @@ const Main = () => {
 
         return (
 
-            <Typography variant="h6">Loading...</Typography>
+            <Container sx={{py: 10, textAlign: "center"}}>
+
+                <CircularProgress />
+            </Container>
         )
     }
 
@@ -48,7 +55,11 @@ const Main = () => {
 
         return (
 
-            <Typography variant="h6">{error.message}</Typography>
+            <Container sx={{py: 10, textAlign: "center"}}>
+
+                <Typography variant="h6">{error.error}</Typography>
+                <Typography variant="h5">Please Try Again Later</Typography>
+            </Container>
         )
     }
     
@@ -80,42 +91,49 @@ const Main = () => {
 
                 <Stack mt={10} direction={"row"} flexWrap={"wrap"} justifyContent={"space-between"}>
 
-                    {
+                    <AnimatePresence>
+                        
+                        {
 
-                        data.data.map((item) => {
+                            data.data.map((item) => {
 
-                            return (
+                                return (
 
-                                <Card key={item.id} sx={{maxWidth: 350,":hover .MuiCardMedia-root": {scale: "1.1", transition: "0.3s" }}}>
+                                    <Card component={motion.section} layout initial={{transform: "scale(0)"}} animate={{transform: "scale(1)"}}
+                                        transition={{duration: 1.5, type: "spring", stiffness: 50}}
+                                        key={item.id} sx={{mb: 6, maxWidth: 350,":hover .MuiCardMedia-root": {scale: "1.1", transition: "0.3s" }}}>
 
-                                    <CardMedia sx={{height: 280}} image={`${item.productImg[0].url}`} />
+                                        <CardMedia sx={{height: 280}} image={`${item.productImg[0].url}`} />
 
-                                    <CardContent>
+                                        <CardContent>
 
-                                        <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+                                            <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
 
-                                            <Typography gutterBottom variant="h5" component="div">{item.productTitle}</Typography>
-                                            <Typography variant="subtitle" component="p">{item.productPrice}</Typography>
-                                        </Stack>
+                                                <Typography gutterBottom variant="h5" component="div">{item.productTitle}</Typography>
+                                                <Typography variant="subtitle" component="p">{item.productPrice}</Typography>
+                                            </Stack>
 
-                                        <Typography variant="body2" color="text.secondary">{item.productDescription}</Typography>
-                                    </CardContent>
+                                            <Typography variant="body2" color="text.secondary">{item.productDescription}</Typography>
+                                        </CardContent>
 
-                                    <CardActions sx={{justifyContent: "space-between"}}>
+                                        <CardActions sx={{justifyContent: "space-between"}}>
 
-                                        <Button onClick={handleClickOpen} size="small" sx={{textTransform: "capitalize"}}> 
-                                            
-                                            <AddShoppingCartOutlined sx={{mr: 1}} fontSize="small" />
-                                            Add To Cart
-                                        </Button>
+                                            <Button onClick={() => { handleClickOpen(), setClickedProduct(item)}} 
+                                                    size="small" sx={{textTransform: "capitalize"}}> 
+                                                
+                                                <AddShoppingCartOutlined sx={{mr: 1}} fontSize="small" />
+                                                Add To Cart
+                                            </Button>
 
-                                        <Rating name="read-only" value={item.productRating} readOnly precision={0.1} size="small" />
-                                    </CardActions>
+                                            <Rating name="read-only" value={item.productRating} readOnly precision={0.1} size="small" />
+                                        </CardActions>
 
-                                </Card>
-                            )
-                        })
-                    }
+                                    </Card>
+                                )
+                            })
+                        }
+                    </AnimatePresence>
+
 
                 </Stack>
 
@@ -128,7 +146,7 @@ const Main = () => {
                         <CloseOutlined />
                     </IconButton>
 
-                    <ProductDetails />
+                    <ProductDetails clickedProduct={clickedProduct} />
                 </Dialog>
 
             </Container>

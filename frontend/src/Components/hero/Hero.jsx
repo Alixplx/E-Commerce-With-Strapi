@@ -60,7 +60,7 @@ const Hero = () => {
 
                 <Box sx={{position: "relative"}}>
 
-                    <img src="src/images/banner-17.jpg" alt="" width="100%" />
+                    <img src="./images/banner-17.jpg" alt="" width="100%" />
                     
                     <Stack sx={{position: "absolute", top: "50%", transform: "translateY(-50%)", left: 25}}>
 
@@ -79,7 +79,7 @@ const Hero = () => {
 
                 <Box sx={{position: "relative"}}>
 
-                    <img src="src/images/banner-16.jpg" alt="" width="100%" />
+                    <img src="./images/banner-16.jpg" alt="" width="100%" />
 
                     <Stack sx={{position: "absolute", top: "50%", transform: "translateY(-50%)", left: 25}}>
 
